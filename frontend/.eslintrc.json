@@ -17,6 +17,6 @@
         "react"
     ],
     "rules": {
-        "linebreak-style":"off"//ok ligne vide
+       
     }
 }
