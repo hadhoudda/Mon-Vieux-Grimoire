@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book')
+const userRoutes = require('./routes/user')
+app.use(express.json());
+require("dotenv").config();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,7 +19,7 @@ mongoose.connect('mongodb+srv://houda:houda83@cluster0.bugaclq.mongodb.net/?retr
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use(express.json());
-app.use('/api/books', bookRoutes);
 
+app.use('/api/books', bookRoutes);
+app.use('/api/auth', userRoutes)
 module.exports = app;
