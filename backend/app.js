@@ -20,7 +20,6 @@ mongoose.connect('mongodb+srv://houda:houda83@cluster0.bugaclq.mongodb.net/?retr
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes)
 app.use('/images', express.static(path.join(__dirname, 'images')));
