@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb+srv://houda:houda83@cluster0.bugaclq.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.DBLINK,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
