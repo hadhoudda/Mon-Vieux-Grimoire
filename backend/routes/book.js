@@ -9,6 +9,8 @@ const router = express.Router();
 router.post('/', auth , multer ,sharp , bookCtrl.createBook);
 // Route pour ajouter une évaluation à un livre
 router.post('/:id/rating', auth , bookCtrl.creatRating)
+//Route pour afficher l
+router.get('/bestrating', bookCtrl.bestRating)
 // Route pour modifier les informations d'un livre existant
 router.put('/:id', auth , multer , sharp , bookCtrl.modifyBook);
 // Route pour supprimer un livre existant

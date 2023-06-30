@@ -1,19 +1,37 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
-exports.createBook = (req, res, next) => {
-  const bookObject = JSON.parse(req.body.book);
-  delete bookObject._id;
-  delete bookObject._userId;     
-  const book = new Book({
-     ...bookObject,
-    userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`, 
-    });
+exports.createBook = async (req, res) => {
+  try { const bookObject = JSON.parse(req.body.book);
+    delete bookObject._id;
+    delete bookObject._userId;     
+    const book = new Book({
+       ...bookObject,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`, 
+      });
+  
+      const result = await book.save()
+      if(result){
+        return res.status(201).json({ message: 'Livre enregistré !'})
+      }
+      throw new Errr('echec') //si ona pb de création pas besion d'explique l'erreur (fuite de données si on fait beacoup d'explication au frontend)
+    }
+  catch(error){ res.status(400).json({ error }) }
 
-    book.save()
-      .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
-      .catch(error => res.status(400).json({ error }));
+
+  // const bookObject = JSON.parse(req.body.book);
+  // delete bookObject._id;
+  // delete bookObject._userId;     
+  // const book = new Book({
+  //    ...bookObject,
+  //   userId: req.auth.userId,
+  //   imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`, 
+  //   });
+
+  //   book.save()
+  //     .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
+  //     .catch(error => res.status(400).json({ error }));
  };
     
 exports.modifyBook = (req, res, next) => {
@@ -75,11 +93,49 @@ exports.getAllBook =  (req, res, next) => {
   
  // pour ajouter une évaluation à un livre
   exports.creatRating =  (req, res, next) => {
-    const ratings = new Book({
-      ...req.body.ratings
-    });
-    ratings.save()
-    .then(() => res.status(201).json({ message: 'Note enregistré !'}))
-    .catch(error => res.status(400).json({ error }));
+      const bookId = req.params.id;
+      if (!bookId) {
+        return res.status(400).json({ message: "L'identifiant du livre est manquant." });
+      }
+    
+      // Vérifier si l'utilisateur a déjà ajouté une notation pour ce livre
+      Book.findOne({ _id: bookId, "ratings.userId": req.auth.userId })
+        .then((book) => {
+          if (book) {
+            return res.status(400).json({ message: "Vous avez déjà noté ce livre." });
+          }
+    
+          // Mettre à jour le livre avec la nouvelle note
+          Book.findByIdAndUpdate(bookId, {
+            $push: {
+              ratings: {
+                userId: req.auth.userId,
+                grade: req.body.rating
+              }
+            }
+          }, { new: true })
+            .then((book) => {
+              if (!book) {
+                return res.status(404).json({ message: "Le livre n'existe pas." });
+              }
+    
+              // Calculer la moyenne des notes
+              const totalRatings = book.ratings.length;
+    
+              const sumRates = book.ratings.reduce((total, rating) => total + rating.grade, 0);
+              book.averageRating = sumRates / totalRatings;
+    
+              // Enregistrer les modifications
+              book.save().then((book) => {
+                res.status(200).json(book, { message: "Notation enregistrée " });
+              });
+            })
+            .catch((error) => res.status(400).json({ error }));
+        })
+        .catch((error) => res.status(400).json({ error }));
+    }; 
 
+
+  exports.bestRating = (req  ,res, next) => {
+    
   }
