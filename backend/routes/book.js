@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/', auth , multer ,sharp , bookCtrl.createBook);
 // Route pour ajouter une évaluation à un livre
 router.post('/:id/rating', auth , ratingCtrl.creatRating)
-//Route pour afficher l
+//Route pour afficher moyenne d'évaluation à un livre
 router.get('/bestrating', ratingCtrl.bestRating)
 // Route pour modifier les informations d'un livre existant
 router.put('/:id', auth , multer , sharp , bookCtrl.modifyBook);
