@@ -4,6 +4,10 @@ const Book = require('../models/Book');
 exports.creatRating =  (req, res) => {
       console.log(req.params.id)
       console.log(req.auth.userId)
+      // Vérifier si l'utilisateur est connecté
+      if (req.body.userId !== req.auth.userId) {
+          return res.status(401).json({ message: 'Non autorisé' })
+      } 
       // Vérifier si l'utilisateur a déjà ajouté une notation pour ce livre
       Book.findOne({ _id: req.params.id  })
             .then((book) => {
