@@ -27,14 +27,11 @@ exports.modifyBook = async (req, res) => {
         } : { ...req.body };
         delete bookObject._userId;
         const book = await Book.findOne({_id: req.params.id})
-            if (book.userId != req.auth.userId) {
-                return res.status(401).json({ message : 'Not authorized'});
-            } 
-            try{
-                Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-                res.status(200).json({message : 'Livre modifié!'})
-            }
-            catch(error){res.status(401).json({ error })}
+        if (book.userId === req.auth.userId) {
+            Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
+            res.status(200).json({message : 'Livre modifié!'})
+        }
+        throw new Errr(`${res.status(401).json({ error })}`)
     }
     catch(error){res.status(400).json({ error })}
 };
@@ -45,13 +42,13 @@ exports.deleteBook = async(req, res) => {
 		if (book.userId != req.auth.userId) {
 				return res.status(401).json({message: 'Not authorized'});
 			}
-			const filename = book.imageUrl.split('/images/')[1];
-			fs.unlink(`images/${filename}`, async() => {
-			try{
-                Book.deleteOne({_id: req.params.id})
-			    res.status(200).json({message: 'Objet supprimé !'})
-            }
-			catch(error){res.status(401).json({ error })}
+		const filename = book.imageUrl.split('/images/')[1];
+		fs.unlink(`images/${filename}`, async() => {
+		try{
+            Book.deleteOne({_id: req.params.id})
+			res.status(200).json({message: 'Objet supprimé !'})
+        }
+		catch(error){res.status(401).json({ error })}
         })
 	}
     catch( error){res.status(400).json({ error })}  
