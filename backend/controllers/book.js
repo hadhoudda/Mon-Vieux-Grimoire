@@ -1,7 +1,7 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
-exports.createBook = async (req, res) => {
+exports.createBook = async (req, res ) => {
 	try {const bookObject = JSON.parse(req.body.book);
 		delete bookObject._id;
 		delete bookObject._userId;     
@@ -26,17 +26,17 @@ exports.modifyBook = async (req, res) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         } : { ...req.body };
         delete bookObject._userId;
-        const book = await Book.findOne({_id: req.params.id})
-        if (book.userId === req.auth.userId) {
-            Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-            res.status(200).json({message : 'Livre modifié!'})
+        const bookUser = await Book.findOne({_id: req.params.id})
+        if (bookUser.userId != req.auth.userId) {
+            return res.status(401).json({ message : 'Not authorized'})
         }
-        throw new Errr(`${res.status(401).json({ error })}`)
+        const book = await Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
+        res.status(200).json({message : 'Livre modifié!'})
     }
     catch(error){res.status(400).json({ error })}
 };
 
-exports.deleteBook = async(req, res) => {
+exports.deleteBook = async(req, res , next) => {
     try{
         const book = await Book.findOne({ _id: req.params.id})
 		if (book.userId != req.auth.userId) {
@@ -45,7 +45,7 @@ exports.deleteBook = async(req, res) => {
 		const filename = book.imageUrl.split('/images/')[1];
 		fs.unlink(`images/${filename}`, async() => {
 		try{
-            Book.deleteOne({_id: req.params.id})
+            const book = await Book.deleteOne({_id: req.params.id})
 			res.status(200).json({message: 'Objet supprimé !'})
         }
 		catch(error){res.status(401).json({ error })}
