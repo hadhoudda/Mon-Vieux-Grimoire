@@ -10,29 +10,28 @@ exports.creatRating = async (req, res) => {
                   return res.status(401).json({ message: 'Non autorisé' })
             } 
             // Vérifier si l'utilisateur a déjà ajouté une notation pour ce livre
-            const bookRate = await Book.findOne({ _id: req.params.id  })
+            const book = await Book.findOne({ _id: req.params.id  })
             console.log(req.body.userId)
-            if (bookRate && req.body.userId === req.auth.userId) {
+            if (book && book.ratings.find(user => user.userId === req.auth.userId)) {
                 return res.status(400).json({ message: "Vous avez déjà noté ce livre." });
             }
             // Mettre à jour le livre avec la nouvelle note
-            const book = await Book.findByIdAndUpdate({ _id: req.params.id  },  {
-                  $push: {  //$push operator appends a specified value to an array.
-                        ratings: {
-                        userId: req.auth.userId,
-                        grade: req.body.rating
-                        }
-                  }
-            })
+            book.ratings.push({
+                  userId : req.auth.userId,
+                  grade :req.body.rating
+                  })
+            
             // Calculer la moyenne des notes
-            const averRati = book.averageRating
             const totalRatings = book.ratings.length;
             const sumNoteRates = book.ratings.reduce((total, rating) => total + rating.grade, 0);
-            averRati = sumNoteRates / totalRatings;
+            const averageRating = sumNoteRates / totalRatings;
             // Enregistrer les modifications
-            book.replaceOne({averageRating : {averRati}})            
+            book.averageRating = averageRating
+            await book.updateOne({ _id: req.params.id}, { book})
+            await book.save()
+            res.status(200).json(book)
       }
-    catch(error){ res.status(400).json({ error })}
+      catch(error){ res.status(400).json({ error })}
 }
 
 exports.bestRating = async(req  ,res, next) => {
