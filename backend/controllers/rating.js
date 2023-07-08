@@ -3,8 +3,8 @@ const Book = require('../models/Book');
  //ajouter une évaluation à un livre
 exports.creatRating = async (req, res) => {
       try{
-            console.log(req.params.id)
-            console.log(req.auth.userId)
+            //console.log(req.params.id)
+            //console.log(req.auth.userId)
             // Vérifier si l'utilisateur est connecté
             if (req.body.userId !== req.auth.userId) {
                   return res.status(401).json({ message: 'Non autorisé' })
