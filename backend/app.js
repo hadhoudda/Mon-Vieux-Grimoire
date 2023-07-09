@@ -3,10 +3,20 @@ const app = express();
 const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book')
 const userRoutes = require('./routes/user')
-app.use(express.json());
+const helmet = require('helmet')
 const path = require('path');
 require("dotenv").config();
 
+app.use(express.json());
+//************ Utilisation de middleware Helmet  *************/  
+app.use(helmet());
+app.use(
+  helmet.crossOriginResourcePolicy({
+    policy: "cross-origin",
+  })
+);
+
+//****** gérer les pbs de cors */
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');

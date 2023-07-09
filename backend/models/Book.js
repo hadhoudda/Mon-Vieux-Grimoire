@@ -3,17 +3,17 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const bookSchema = mongoose.Schema({
   userId: { type: String, required: true },
-  title: { type: String, required: true , unique: true },
-  author: { type: String, required: true },
+  title: { type: String, required: true ,maxlength: 50 , unique: true },
+  author: { type: String, required: true ,maxlength: 50 },
   imageUrl: { type: String, required: true },
   year: { type: Number, required: true },
   genre: { type: String, required: true },
   ratings: [
     {
-      userId: { type: String, required: true },
+      userId: { type: String, required: false },
       grade: {
         type: Number,
-        required: true,
+        required: false,
         min: 0,
         max: 5,
       },

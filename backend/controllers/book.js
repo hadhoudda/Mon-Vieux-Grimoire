@@ -6,12 +6,13 @@ exports.createBook = async (req, res ) => {
         const bookObject = JSON.parse(req.body.book)
         console.log(bookObject)   
 		const book = new Book({
-			 ...bookObject,
-			userId: req.auth.userId,
+			...bookObject,
+            userId: req.auth.userId,
 			imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`,
-            //ratings: [],
-            //averageRating : 0
+            ratings: [],
+            averageRating : 0
 		});
+        console.log(book)
         // Vérifier l'année de publication du livre 
         const today = new Date()
         const year = today.getFullYear()            
@@ -26,7 +27,7 @@ exports.createBook = async (req, res ) => {
 		}
 	catch(error){ res.status(400).json({ error })}
 };
-		
+	
 exports.modifyBook = async (req, res) => {
 	try{
         // Vérifie si existe une image à la requête
@@ -83,6 +84,7 @@ exports.deleteBook = async(req, res , next) => {
 exports.getOneBook = async (req, res) => {
     try{
         const book = await Book.findOne({ _id: req.params.id })
+        console.log(book)
         res.status(200).json(book)
     }
     catch(error){res.status(404).json({ error })};
@@ -92,7 +94,7 @@ exports.getAllBook = async (req,res) => {
     try{
         const books = await Book.find()
         if(books != null){
-           return res.status(200).json(books)
+            return res.status(200).json(books)
         } 
         throw new Errr('Pas de livres')    
     }
