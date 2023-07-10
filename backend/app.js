@@ -3,26 +3,32 @@ const app = express();
 const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book')
 const userRoutes = require('./routes/user')
+const path = require('path');// Package qui gère le chemin des fichier
 const helmet = require('helmet')
-const path = require('path');
+const limiter = require('./config/rate-limit')
+const cookieParser = require('cookie-parser')//Package qui gere les cookies
 require("dotenv").config();
 
 app.use(express.json());
-//************ Utilisation de middleware Helmet  *************/  
-app.use(helmet());
-app.use(
-  helmet.crossOriginResourcePolicy({
-    policy: "cross-origin",
-  })
-);
 
-//****** gérer les pbs de cors */
+//****** gérer les problèmes de cors *******//
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
+//************ Utilisation de middleware Helmet  *************//  
+app.use(helmet());
+app.use(
+  helmet.crossOriginResourcePolicy({
+    policy: "cross-origin",
+  })
+);
+// ************ Vérification des limites Requêtes / SERVEUR ************//
+app.use(limiter);
+//********** Récuperer la data encodé sous Cookies ************//
+app.use(cookieParser());
 
 mongoose.connect(process.env.DBLINK,
   { useNewUrlParser: true,
