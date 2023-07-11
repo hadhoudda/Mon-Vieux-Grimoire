@@ -1,19 +1,35 @@
 const Book = require('../models/Book');
 const fs = require('fs');
+const DOMPurify = require("../config/dompurify"); //Package pour purifier les données dangereuse dans l'input
 const User = require('../models/User');
 
 exports.createBook = async (req, res ) => {
 	try {
         const bookObject = JSON.parse(req.body.book)
-        console.log(bookObject)   
-		const book = new Book({
+        console.log(bookObject)  
+    
+		const cleanBookObject = {
 			...bookObject,
+            // Purification des champs input
+            title: DOMPurify.sanitize(bookObject.title),
+            author: DOMPurify.sanitize(bookObject.author),
+            genre: DOMPurify.sanitize(bookObject.genre),
             userId: req.auth.userId,
 			imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`,
             ratings:[],
-            averageRating : 0
-		});
-        console.log(book)
+            averageRating:0
+		};
+        
+        const book = new Book(cleanBookObject);
+          if (
+            cleanBookObject.title !== bookObject.title ||
+            cleanBookObject.author !== bookObject.author ||
+            cleanBookObject.genre !== bookObject.genre
+          ) {
+            console.log("Détection de données dangereuses envoye par l'utilisateur :" + req.auth.userId);
+            return res.status(400).json({ message: "Données dangereuses détectées STOP!"});
+          }
+        
         // Vérifier l'année de publication du livre 
         const today = new Date()
         const year = today.getFullYear()            
@@ -36,13 +52,29 @@ exports.modifyBook = async (req, res) => {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`        
         } : {...req.body }
-        delete bookObject._userId
+
+        // purification les données modifiées
+        const cleanBookObject = {
+            ...bookObject,
+            title: DOMPurify.sanitize(bookObject.title),
+            author: DOMPurify.sanitize(bookObject.author),
+            genre: DOMPurify.sanitize(bookObject.genre),
+        }
+        if (
+            cleanBookObject.title !== bookObject.title ||
+            cleanBookObject.author !== bookObject.author ||
+            cleanBookObject.genre !== bookObject.genre
+        ) {
+            console.log("Détection de données dangereuses envoye par l'utilisateur :" + req.auth.userId);
+            return res.status(400).json({ message: "Données dangereuses détectées STOP!"});
+          }
         // Vérifier l'année de publication du livre 
         const today = new Date()
         const year = today.getFullYear()            
         if (bookObject.year > year) {              
             return  res.status(400).json("Année de publication supperieur à la date actuelle.")
         }
+
         //Vérifier si l'utilisateur a le droit de modificatier le livre ou non        
         const book = await Book.findOne({ _id: req.params.id })
         if (book.userId != req.auth.userId) {
