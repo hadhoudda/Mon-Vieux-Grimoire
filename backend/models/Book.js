@@ -10,10 +10,10 @@ const bookSchema = mongoose.Schema({
   genre: { type: String, required: true },
   ratings: [
     {
-      userId: { type: String, required: false },
+      userId: { type: String, required: true },
       grade: {
         type: Number,
-        required: false,
+        required: true,
         min: 0,
         max: 5,
       },

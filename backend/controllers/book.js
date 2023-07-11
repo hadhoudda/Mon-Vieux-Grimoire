@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
 const fs = require('fs');
+const User = require('../models/User');
 
 exports.createBook = async (req, res ) => {
 	try {
@@ -9,7 +10,7 @@ exports.createBook = async (req, res ) => {
 			...bookObject,
             userId: req.auth.userId,
 			imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`,
-            ratings: [],
+            ratings:[],
             averageRating : 0
 		});
         console.log(book)
