@@ -1,7 +1,6 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 const DOMPurify = require("../config/dompurify"); //Package pour purifier les données dangereuse dans l'input
-const User = require('../models/User');
 
 exports.createBook = async (req, res ) => {
 	try {
@@ -42,7 +41,7 @@ exports.createBook = async (req, res ) => {
 		if(result){
 			return res.status(201).json({ message: 'Livre enregistré !'})
 		}
-		    throw new Error('echec')
+		res.status(401).json({ message: "enregistrement impossible!" });
 		}
 	catch(error){ res.status(400).json({ error })}
 };
@@ -83,24 +82,32 @@ exports.modifyBook = async (req, res) => {
             return res.status(401).json({ message: 'Not authorized' })
         }
         if (req.file) {
-            try {
-                const filename =await book.imageUrl.split('/images/')[1]
-                // Supprime l'ancienne image du livre du système de fichiers
-                fs.unlink(`images/${filename}`,async (err) => {
-                    if (err) throw new  Error('impossible de supprimer le fichier')
-                    // Met à jour le livre 
-                    await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-                    res.status(201).json({ message: 'Livre modifié !' })
-                    
-                })
-            } catch (error) {res.status(400).json({ error })}
-        }else{
-            await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-            res.status(201).json({ message: 'Livre modifié !' })   
-        }
-        
+            const filename = book.imageUrl.split("/images/")[1];
+            // Supprime l'ancienne image du livre du système de fichiers
+            fs.unlink(`images/${filename}`, async (err) => {
+            if (err)
+                return res.status(400).json({ message: "suppression impossible !" });
+            const bookUp = await up(bookObject, req.params.id);
+            if (bookUp)
+                return res.status(200).json({ message: "Livre modifié !" });
+            else 
+                return res.status(400).json({ message: "mise à jour impossible !" });
+            });
+        } else {
+                // Met à jour le livre
+                const bookUp = await up(bookObject, req.params.id);
+                if (bookUp)
+                return res.status(200).json({ message: "Livre modifié !" });
+                else
+                    return res.status(400).json({ message: "mise à jour impossible !" });
+            }
+        } catch (error) {
+            res.status(400).json({ error });
     }
-    catch(error){res.status(400).json({ error })}
+    // mise à jour du livre
+    const up = async (bookObject, id) => {
+        return await Book.updateOne({ _id: id }, { ...bookObject, _id: id });
+    }   
 };
 
 exports.deleteBook = async(req, res , next) => {
@@ -136,7 +143,7 @@ exports.getAllBook = async (req,res) => {
         if(books != null){
             return res.status(200).json(books)
         } 
-        throw new Errr('Pas de livres')    
+        res.status(200).json({ message: "Pas de livres" });   
     }
     catch(error){res.status(404).json({ error })};
 };
