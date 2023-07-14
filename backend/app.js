@@ -6,8 +6,9 @@ const userRoutes = require('./routes/user')
 const path = require('path');// Package qui gère le chemin des fichier
 const helmet = require('helmet')
 const limiter = require('./config/rate-limit')
-const cookieParser = require('cookie-parser')//Package qui gere les cookies
-require("dotenv").config();
+const mongoSanitize = require('express-mongo-sanitize');//remplace tout caractere interdit
+//const cookieParser = require('cookie-parser')//Package qui gere les cookies
+require("dotenv").config();//fichier cacher données sensibles
 
 app.use(express.json());
 
@@ -21,20 +22,27 @@ app.use((req, res, next) => {
 //************ Utilisation de middleware Helmet  *************//  
 app.use(helmet());
 app.use(
-  helmet.crossOriginResourcePolicy({
-    policy: "cross-origin",
+  helmet.crossOriginResourcePolicy({//same-site
+    policy: "cross-origin",//d'autre site de meme port (origine)//accepte origine diff
   })
 );
 // ************ Vérification des limites Requêtes / SERVEUR ************//
 app.use(limiter);
+///////////
 //********** Récuperer la data encodé sous Cookies ************//
-app.use(cookieParser());
+// app.use(cookieParser());
 
 mongoose.connect(process.env.DBLINK,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
+/////
+app.use(
+  mongoSanitize({
+    replaceWith: '_',
+  }),
+);
 
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes)

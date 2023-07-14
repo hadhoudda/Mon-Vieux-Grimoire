@@ -20,7 +20,7 @@ exports.creatRating = async (req, res) => {
             // Calculer la moyenne des notes
             const totalRatings = book.ratings.length;
             const sumNoteRates = book.ratings.reduce((total, rating) => total + rating.grade, 0);
-            const averageRating = sumNoteRates / totalRatings;
+            const averageRating = (sumNoteRates / totalRatings).toFixed();
             // Enregistrer les modifications
             book.averageRating = averageRating
             await book.updateOne({ _id: req.params.id}, { book})

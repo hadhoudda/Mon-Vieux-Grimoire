@@ -5,8 +5,8 @@ const User = require('../models/User');
 
 exports.createBook = async (req, res ) => {
 	try {
-        const bookObject = JSON.parse(req.body.book)
-        console.log(bookObject)  
+        const bookObject = JSON.parse(req.body.book)//contenu de req
+        //console.log(bookObject)  
     
 		const cleanBookObject = {
 			...bookObject,
@@ -20,7 +20,7 @@ exports.createBook = async (req, res ) => {
             averageRating:0
 		};
         
-        const book = new Book(cleanBookObject);
+        const book = new Book(cleanBookObject);//compare l'objet nettoye avec l'objet envoye
           if (
             cleanBookObject.title !== bookObject.title ||
             cleanBookObject.author !== bookObject.author ||
@@ -32,7 +32,9 @@ exports.createBook = async (req, res ) => {
         
         // Vérifier l'année de publication du livre 
         const today = new Date()
-        const year = today.getFullYear()            
+        const year = today.getFullYear()  
+        console.log(today) 
+        console.log(year)         
         if (bookObject.year > year) {              
             return  res.status(400).json("Année de publication supperieur à la date actuelle.")
         }
@@ -40,7 +42,7 @@ exports.createBook = async (req, res ) => {
 		if(result){
 			return res.status(201).json({ message: 'Livre enregistré !'})
 		}
-		    throw new Errr('echec')
+		    throw new Error('echec')
 		}
 	catch(error){ res.status(400).json({ error })}
 };
@@ -78,20 +80,25 @@ exports.modifyBook = async (req, res) => {
         //Vérifier si l'utilisateur a le droit de modificatier le livre ou non        
         const book = await Book.findOne({ _id: req.params.id })
         if (book.userId != req.auth.userId) {
-            return res.status(403).json({ message: 'Not authorized' })
+            return res.status(401).json({ message: 'Not authorized' })
         }
         if (req.file) {
             try {
-                const filename = book.imageUrl.split('/images/')[1]
+                const filename =await book.imageUrl.split('/images/')[1]
                 // Supprime l'ancienne image du livre du système de fichiers
-                fs.unlink(`images/${filename}`, (err) => {
-                    if (err) throw err
+                fs.unlink(`images/${filename}`,async (err) => {
+                    if (err) throw new  Error('impossible de supprimer le fichier')
+                    // Met à jour le livre 
+                    await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+                    res.status(201).json({ message: 'Livre modifié !' })
+                    
                 })
-            } catch (error) {res.status(500).json({ error })}
+            } catch (error) {res.status(400).json({ error })}
+        }else{
+            await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+            res.status(201).json({ message: 'Livre modifié !' })   
         }
-         // Met à jour le livre 
-        await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-        res.status(200).json({ message: 'Livre modifié !' })
+        
     }
     catch(error){res.status(400).json({ error })}
 };
@@ -105,10 +112,10 @@ exports.deleteBook = async(req, res , next) => {
 		const filename = book.imageUrl.split('/images/')[1];
 		fs.unlink(`images/${filename}`, async() => {
 		try{
-            const book = await Book.deleteOne({_id: req.params.id})
+            await Book.deleteOne({_id: req.params.id})
 			res.status(200).json({message: 'Objet supprimé !'})
         }
-		catch(error){res.status(401).json({ error })}
+		catch(error){res.status(400).json({ error })}
         })
 	}
     catch( error){res.status(400).json({ error })}  
