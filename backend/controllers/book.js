@@ -47,7 +47,7 @@ exports.createBook = async (req, res ) => {
 };
 	
 exports.modifyBook = async (req, res) => {
-	try{
+	try{ 
         // Vérifie si existe une image à la requête
         const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
@@ -81,6 +81,10 @@ exports.modifyBook = async (req, res) => {
         if (book.userId != req.auth.userId) {
             return res.status(401).json({ message: 'Not authorized' })
         }
+        //fonction de mise à jour du livre
+        const up = async (bookObject, id) => {
+            return await Book.updateOne({ _id: id }, { ...bookObject, _id: id });
+        }  
         if (req.file) {
             const filename = book.imageUrl.split("/images/")[1];
             // Supprime l'ancienne image du livre du système de fichiers
@@ -104,10 +108,6 @@ exports.modifyBook = async (req, res) => {
         } catch (error) {
             res.status(400).json({ error });
     }
-    // mise à jour du livre
-    const up = async (bookObject, id) => {
-        return await Book.updateOne({ _id: id }, { ...bookObject, _id: id });
-    }   
 };
 
 exports.deleteBook = async(req, res , next) => {

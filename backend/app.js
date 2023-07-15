@@ -1,14 +1,13 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const bookRoutes = require('./routes/book')
-const userRoutes = require('./routes/user')
-const path = require('path');// Package qui gère le chemin des fichier
-const helmet = require('helmet')
-const limiter = require('./config/rate-limit')
-const mongoSanitize = require('express-mongo-sanitize');//remplace tout caractere interdit
-//const cookieParser = require('cookie-parser')//Package qui gere les cookies
-require("dotenv").config();//fichier cacher données sensibles
+const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
+const path = require('path'); // Package qui gère le chemin des fichier
+const helmet = require('helmet'); //Package qui aide à sécuriser les applications Express en définissant des en-têtes de réponse HTTP
+const limiter = require('./config/rate-limit');
+const mongoSanitize = require('express-mongo-sanitize'); //Package qui remplace tout caractere interdit
+require("dotenv").config(); //fichier cacher données sensibles
 
 app.use(express.json());
 
