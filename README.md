@@ -1,30 +1,3 @@
-<p align="center">
-  <a href="https://github.com/youcefKNL?tab=repositories"><img src="https://badgen.net/badge/icon/github?icon=github&label"></a></p>
-
-<p align="center">
-  <img src="https://badges.frapsoft.com/os/v1/open-source-200x33.png?v=103">
-</p>
-
-<div align="center">
-  <img src="node-express-mongo.jpg" alt="Node Express Mongo" width="300" height="200"/>                <img src="owasp.jpg" alt="owasp top 10 2023" width="300" height="200" />
-</div>
-
-<div align="center">
-Voici le lien vers l'application React déployée sur Github :<br/>https://youcefknl.github.io/OC_Projet7_MonVieuxGrimoire/ <br/><p align="center"><img src="wing.png" /></p> Veuillez noter que l'API est déployée gratuitement sur Render, ce qui peut entraîner un délai d'attente de -1 minute si le serveur est mis en veille en cas d'inactivité.Les Images Chargées depuis le serveur Render qui passe du mode Inactif à Actif ne seront plus visibles. lA VITESSE DES REQUÊTES PEUT ÊTRE RALENTI PAR RENDER. Nous vous remercions de votre compréhension.<p align="center"><img src="wing.png" /></p></div>
-
-## Tester en local le site et l'ensemble des fonctionnalités:
-
-1.  Clonez le dépôt: `gh repo clone youcefKNL/OC_Projet7_MonVieuxGrimoire`
-2.  Installer les dépendances pour le dossier frontend : `cd frontend && npm install`
-3.  Installer les dépendances pour le dossier backend : `cd backend && npm install`
-4.  Modifier le bon URL de fetch de l'API (de base fetch / Render) dans : `cd frontend/src/utils/constants.js`
-5.  Démarrer l'application frontend : `cd frontend && npm start`
-6.  Démarrer le serveur backend : `cd backend && npm run server`
-7.  Enjoy!
-
-![Logo](https://meilleur-mooc.fr/wp-content/uploads/2021/11/Openclassrooms.png)
-
-## BADGE
 
 <p align="center">
   <img src="node-express-mongo.jpg">
