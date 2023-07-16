@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 require("dotenv").config(); 
 
-exports.signup = async(req, res, next) => {
+exports.signup = async(req, res) => {
     try{
         const hash = await bcrypt.hash(req.body.password, 10)
         const user = new User({
@@ -16,7 +16,7 @@ exports.signup = async(req, res, next) => {
     catch(error){ res.status(400).json({ error })}
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
     try{
         const user = await User.findOne({ email: req.body.email })
         if (!user) {
@@ -39,5 +39,4 @@ exports.login = async (req, res, next) => {
         catch(error){ res.status(500).json({ error })}
     }
     catch(error){ res.status(400).json({ error })}
-   }; 
-    
+};   

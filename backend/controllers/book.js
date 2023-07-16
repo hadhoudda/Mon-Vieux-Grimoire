@@ -4,12 +4,10 @@ const DOMPurify = require("../config/dompurify"); //Package pour purifier les do
 
 exports.createBook = async (req, res ) => {
 	try {
-        const bookObject = JSON.parse(req.body.book)//contenu de req
-        //console.log(bookObject)  
-    
+        const bookObject = JSON.parse(req.body.book)    
 		const cleanBookObject = {
 			...bookObject,
-            // Purification des champs input
+            // Purification les champs input
             title: DOMPurify.sanitize(bookObject.title),
             author: DOMPurify.sanitize(bookObject.author),
             genre: DOMPurify.sanitize(bookObject.genre),
@@ -17,24 +15,21 @@ exports.createBook = async (req, res ) => {
 			imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`,
             ratings:[],
             averageRating:0
-		};
-        
-        const book = new Book(cleanBookObject);//compare l'objet nettoye avec l'objet envoye
-          if (
-            cleanBookObject.title !== bookObject.title ||
-            cleanBookObject.author !== bookObject.author ||
-            cleanBookObject.genre !== bookObject.genre
-          ) {
-            console.log("Détection de données dangereuses envoye par l'utilisateur :" + req.auth.userId);
-            return res.status(400).json({ message: "Données dangereuses détectées STOP!"});
-          }
-        
+		}
+        //Comparer l'objet nettoyé avec l'objet envoyé
+        const book = new Book(cleanBookObject);
+            if(
+                cleanBookObject.title !== bookObject.title ||
+                cleanBookObject.author !== bookObject.author ||
+                cleanBookObject.genre !== bookObject.genre
+            ){
+                console.log("Détection de données dangereuses envoye par l'utilisateur :" + req.auth.userId);
+                return res.status(400).json({ message: "Données dangereuses détectées STOP!"});
+            }
         // Vérifier l'année de publication du livre 
         const today = new Date()
         const year = today.getFullYear()  
-        console.log(today) 
-        console.log(year)         
-        if (bookObject.year > year) {              
+        if (bookObject.year > year){              
             return  res.status(400).json("Année de publication supperieur à la date actuelle.")
         }
 		const result = await book.save()
@@ -42,7 +37,7 @@ exports.createBook = async (req, res ) => {
 			return res.status(201).json({ message: 'Livre enregistré !'})
 		}
 		res.status(401).json({ message: "enregistrement impossible!" });
-		}
+	}
 	catch(error){ res.status(400).json({ error })}
 };
 	
@@ -53,35 +48,33 @@ exports.modifyBook = async (req, res) => {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`        
         } : {...req.body }
-
-        // purification les données modifiées
+        // Purification les données modifiées
         const cleanBookObject = {
             ...bookObject,
             title: DOMPurify.sanitize(bookObject.title),
             author: DOMPurify.sanitize(bookObject.author),
             genre: DOMPurify.sanitize(bookObject.genre),
         }
-        if (
+        if(
             cleanBookObject.title !== bookObject.title ||
             cleanBookObject.author !== bookObject.author ||
             cleanBookObject.genre !== bookObject.genre
-        ) {
+        ){
             console.log("Détection de données dangereuses envoye par l'utilisateur :" + req.auth.userId);
             return res.status(400).json({ message: "Données dangereuses détectées STOP!"});
-          }
+        }
         // Vérifier l'année de publication du livre 
         const today = new Date()
         const year = today.getFullYear()            
-        if (bookObject.year > year) {              
+        if (bookObject.year > year){              
             return  res.status(400).json("Année de publication supperieur à la date actuelle.")
         }
-
-        //Vérifier si l'utilisateur a le droit de modificatier le livre ou non        
+        //Vérifier si l'utilisateur a le droit de modifier le livre ou non        
         const book = await Book.findOne({ _id: req.params.id })
         if (book.userId != req.auth.userId) {
             return res.status(401).json({ message: 'Not authorized' })
         }
-        //fonction de mise à jour du livre
+        //Fonction de mise à jour du livre
         const up = async (bookObject, id) => {
             return await Book.updateOne({ _id: id }, { ...bookObject, _id: id });
         }  
@@ -98,15 +91,14 @@ exports.modifyBook = async (req, res) => {
                 return res.status(400).json({ message: "mise à jour impossible !" });
             });
         } else {
-                // Met à jour le livre
+                // Mettre à jour le livre
                 const bookUp = await up(bookObject, req.params.id);
                 if (bookUp)
-                return res.status(200).json({ message: "Livre modifié !" });
+                    return res.status(200).json({ message: "Livre modifié !" });
                 else
                     return res.status(400).json({ message: "mise à jour impossible !" });
             }
-        } catch (error) {
-            res.status(400).json({ error });
+        } catch (error){ res.status(400).json({ error });
     }
 };
 
@@ -131,7 +123,6 @@ exports.deleteBook = async(req, res , next) => {
 exports.getOneBook = async (req, res) => {
     try{
         const book = await Book.findOne({ _id: req.params.id })
-        console.log(book)
         res.status(200).json(book)
     }
     catch(error){res.status(404).json({ error })};
