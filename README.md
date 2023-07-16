@@ -5,7 +5,7 @@
 
 # Développez le back-end d'un site de notation de livres .
 
-Mon Vieux Grimoire - Création From Scratch d'un back-end
+Mon Vieux Grimoire - P7 formation dev web Openclassroom
 
 ## Scénario
 
