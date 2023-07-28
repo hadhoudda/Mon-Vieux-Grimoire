@@ -17,8 +17,7 @@
         "react"
     ],
     "rules": {
-       
-    },
-    "linebreak": [
-        "error", "windows"]
+        "linebreak-style": 0
+    }
+    
 }
