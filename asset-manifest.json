@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/Mon-Vieux-Grimoire/static/css/main.cf3f8146.css",
+    "main.js": "/Mon-Vieux-Grimoire/static/js/main.f7e50aa6.js",
+    "static/js/787.2c0e5b38.chunk.js": "/Mon-Vieux-Grimoire/static/js/787.2c0e5b38.chunk.js",
+    "static/media/home_banner.jpg": "/Mon-Vieux-Grimoire/static/media/home_banner.e160219c56381f5d72be.jpg",
+    "static/media/book_delete.png": "/Mon-Vieux-Grimoire/static/media/book_delete.f0aec92a2dde895664ec.png",
+    "static/media/book_add.jpg": "/Mon-Vieux-Grimoire/static/media/book_add.39d19f3dbedefa81ee63.jpg",
+    "static/media/Logo.svg": "/Mon-Vieux-Grimoire/static/media/Logo.16725d5f400454fc59f2d21c740b0a06.svg",
+    "static/media/map_footer.png": "/Mon-Vieux-Grimoire/static/media/map_footer.a4eb4130dd9828775917.png",
+    "index.html": "/Mon-Vieux-Grimoire/index.html",
+    "main.cf3f8146.css.map": "/Mon-Vieux-Grimoire/static/css/main.cf3f8146.css.map",
+    "main.f7e50aa6.js.map": "/Mon-Vieux-Grimoire/static/js/main.f7e50aa6.js.map",
+    "787.2c0e5b38.chunk.js.map": "/Mon-Vieux-Grimoire/static/js/787.2c0e5b38.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cf3f8146.css",
+    "static/js/main.f7e50aa6.js"
+  ]
+}
