@@ -7,6 +7,7 @@ const sharp = require ('../middleware/sharp')
 const router = express.Router();
 
 // Route pour obtenir tous les livres
+// router.get('/', bookCtrl.getAllBook);//si on travail au mongodb
 router.get('/', bookCtrl.getAllBook);
 //Route pour afficher la moyenne note du livre
 router.get('/bestrating', ratingCtrl.bestRating)
