@@ -19,6 +19,6 @@
     "rules": {
        
     },
-    "linebreak-style": [
+    "linebreak": [
         "error", "windows"]
 }
