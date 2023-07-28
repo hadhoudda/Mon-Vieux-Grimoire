@@ -26,7 +26,8 @@ function App() {
         <ScrollToTop />
         <Header user={user} setUser={setUser} />
         <Routes>
-          <Route index element={<Home />} />
+          {/* <Route index element={<Home />} /> */}
+          <Route exact path="/Mon-Vieux-Grimoire" element={<Home />} />
           <Route path={APP_ROUTES.SIGN_IN} element={<SignIn setUser={setUser} />} />
           <Route path={APP_ROUTES.BOOK} element={<Book />} />
           <Route path={APP_ROUTES.UPDATE_BOOK} element={<UpdateBook />} />
